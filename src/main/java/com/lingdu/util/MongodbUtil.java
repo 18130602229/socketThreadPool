@@ -1,7 +1,10 @@
 package com.lingdu.util;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -16,41 +19,44 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 public class MongodbUtil {  
-	private static String CONN_HOST = "218.104.188.43";
-	private static int CONN_PORT = 27017;
+	private static String addr;
+	private static String port;
 	
-    /** 
-     * ������ݿ����ӵ�ַ 
-     */  
-   // private final String CONN_HOST = "192.168.221.128";  
-      
-    /** 
-     * ������ݿ����Ӷ˿ں� 
-     */  
-  //  private final int CONN_PORT = 27017;  
-      
-    /** 
-     * MongoDB����ʵ�� 
-     */  
+	static {
+		Properties prop = new Properties();
+		try {
+			InputStream in =MongodbUtil.class.getClassLoader().getResourceAsStream("config.properties");
+            prop.load(in);     ///加载属性列表
+           Iterator<String> it=prop.stringPropertyNames().iterator();
+         while(it.hasNext()){
+              String key=it.next();
+              if("mongodb.addr".equals(key)){
+            	  addr = prop.getProperty(key);
+              }else if ("mongodb.port".equals(key)) {
+				port = prop.getProperty(key);
+			}
+          }
+         in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		  
+	}
+
+ 
     public MongoClient mongoClient = null;  
-      
-    /** 
-     * MongoDB��ݿ�ʵ�� 
-     */  
+  
     public MongoDatabase mongoDatabase= null;  
       
     /** 
-     * ���췽�� 
-     * ��ȡ��ݿ�ʵ�� 
      * @param DB_Name 
      */  
     public MongodbUtil(String DB_Name){  
-        this.mongoClient = new MongoClient(CONN_HOST, CONN_PORT);  
+        this.mongoClient = new MongoClient(addr, Integer.parseInt(port));  
         this.mongoDatabase = this.mongoClient.getDatabase(DB_Name);  
     }  
   
     /** 
-     * ������ݿ⼯�� 
      * @param collName ��ݿ���� 
      */  
     public boolean createCollection(String collName){  
@@ -67,7 +73,6 @@ public class MongodbUtil {
     }  
       
     /** 
-     * ��ȡ��ݿ⼯�� 
      * @param collName 
      * @return 
      */  
@@ -76,27 +81,24 @@ public class MongodbUtil {
     }  
       
     /** 
-     * ���뵥���ĵ� 
-     * @param doc Bson�ĵ� 
-     * @param collName ������� 
-     */  
+     * @param doc
+     * @param collName
+     */
     public void insert(Document doc, String collName){  
         MongoCollection<Document> coll = this.mongoDatabase.getCollection(collName);  
         coll.insertOne(doc);  
     }  
       
     /** 
-     * ���������ĵ� 
-     * @param list List�����ĵ� 
-     * @param collName ������� 
-     */  
+     * @param list
+     * @param collName
+     */
     public void insert(List<Document> list, String collName){  
         MongoCollection<Document> coll = this.mongoDatabase.getCollection(collName);  
         coll.insertMany(list);  
     }  
   
     /** 
-     * ���Ҽ���������Document 
      * @param collName 
      * @return 
      */  
@@ -112,7 +114,6 @@ public class MongodbUtil {
     }  
       
     /** 
-     * ָ���������� 
      * @param query 
      * @param collName 
      * @return 
@@ -129,7 +130,6 @@ public class MongodbUtil {
     }  
   
     /** 
-     * ָ����������ָ���ֶ� 
      * @param query 
      * @param collName 
      * @return 
@@ -148,7 +148,6 @@ public class MongodbUtil {
       
       
     /** 
-     * ����һ�� 
      * @param query 
      * @param collName 
      * @return 
@@ -163,7 +162,6 @@ public class MongodbUtil {
       
   
     /** 
-     * ɾ����е�������� 
      * @param collName 
      */  
     public void deleteAll(String collName){  
@@ -175,7 +173,6 @@ public class MongodbUtil {
       
       
     /** 
-     * ɾ��ָ����������� 
      * @param b 
      * @param collName 
      */  
@@ -186,7 +183,6 @@ public class MongodbUtil {
       
       
     /** 
-     * ɾ��ָ����һ����� 
      * @param b 
      * @param collName 
      */  
@@ -199,7 +195,6 @@ public class MongodbUtil {
     //collection.updateMany(Filters.eq("likes", 100), new Document("$set", new Document("likes",200)) );    
       
     /** 
-     * ����ѯ���������޸� 
      * @param b 
      * @param doc 
      * @param collName 
@@ -209,7 +204,6 @@ public class MongodbUtil {
         coll.updateMany(b, doc);  
     }  
     /**
-     * һ����ݽ��и���
      * @param coll
      * @param id
      * @param newdoc
@@ -229,7 +223,6 @@ public class MongodbUtil {
 		return newdoc;
 	}
     /**
-     * һ����ݽ��и���
      * @param coll
      * @param id
      * @param newdoc

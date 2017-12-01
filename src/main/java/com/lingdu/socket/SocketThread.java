@@ -14,16 +14,13 @@ import org.apache.log4j.Logger;
  */
 class SocketThread extends Thread {
 	private static Logger logger =Logger.getLogger("SocketThread.class");
-	private ServletContext servletContext;
 	private ServerSocket serverSocket;
 	private int count = 0;
-
-	public SocketThread(ServerSocket serverSocket, ServletContext servletContext) {
-		this.servletContext = servletContext;
-		String port = this.servletContext.getInitParameter("socketPort");
+	
+	public SocketThread(ServerSocket serverSocket, String socketPort) {
 		if (serverSocket == null) {
 			try {
-				this.serverSocket = new ServerSocket(Integer.parseInt(port));
+				this.serverSocket = new ServerSocket(Integer.parseInt(socketPort));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
