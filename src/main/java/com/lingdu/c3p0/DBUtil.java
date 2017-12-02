@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -23,6 +24,9 @@ public class DBUtil {
 	 */
 	public int insertMessageList(String str) {
 		Connection conn = ConnectionManager.getInstance().getConnection();
+		Random rand = new Random();
+		int randNum = rand.nextInt(9);
+		logger.info("生成的随机数 ；"+ randNum);
 		// 插入的条数
 		int size = 0;
 			// 将 list 集合 变成 value 的字符串。进行批量插入
@@ -31,7 +35,7 @@ public class DBUtil {
 			StringBuffer sbf = new StringBuffer();
 			sbf.append("(").append(str).append(")");
 			try {
-				String sql = "INSERT INTO message" + KEY_STR + sbf.toString();
+				String sql = "INSERT INTO message"+randNum + KEY_STR + sbf.toString();
 				stmt = conn.createStatement();
 				size = stmt.executeUpdate(sql);
 			} catch (SQLException e) {
