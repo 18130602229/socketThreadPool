@@ -1,7 +1,6 @@
 package com.lingdu.socket;
 
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
@@ -18,14 +17,8 @@ public class ServerSocketListener implements ServletContextListener {
 		try {
 			InputStream in =MongodbUtil.class.getClassLoader().getResourceAsStream("config.properties");
             prop.load(in);     ///加载属性列表
-           Iterator<String> it=prop.stringPropertyNames().iterator();
-         while(it.hasNext()){
-              String key=it.next();
-              if("socket.port".equals(key)){
-            	  socketPort = prop.getProperty(key);
-              }
-          }
-         in.close();
+            socketPort = prop.getProperty("socket.port");
+            in.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

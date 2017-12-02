@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import javax.servlet.ServletContext;
-
 import org.apache.log4j.Logger;
 
 

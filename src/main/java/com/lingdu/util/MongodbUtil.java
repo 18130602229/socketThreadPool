@@ -2,7 +2,6 @@ package com.lingdu.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,15 +26,8 @@ public class MongodbUtil {
 		try {
 			InputStream in =MongodbUtil.class.getClassLoader().getResourceAsStream("config.properties");
             prop.load(in);     ///加载属性列表
-           Iterator<String> it=prop.stringPropertyNames().iterator();
-         while(it.hasNext()){
-              String key=it.next();
-              if("mongodb.addr".equals(key)){
-            	  addr = prop.getProperty(key);
-              }else if ("mongodb.port".equals(key)) {
-				port = prop.getProperty(key);
-			}
-          }
+            addr = prop.getProperty("mongodb.addr");
+            port = prop.getProperty("mongodb.port");
          in.close();
 		} catch (Exception e) {
 			e.printStackTrace();

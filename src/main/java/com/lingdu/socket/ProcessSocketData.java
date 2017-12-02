@@ -8,23 +8,16 @@ import java.net.Socket;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
-import com.lingdu.util.MongodbUtil;
+import com.lingdu.c3p0.DBUtil;
+import com.lingdu.entity.Message;
 import com.lingdu.utiltool.ConmmentUtil;
-import com.mongodb.BasicDBObject;
-import com.mongodb.client.model.Filters;
 
 class ProcessSocketData extends Thread {
 
 	private static Logger logger = Logger.getLogger("ProcessSocketData.class");
 	private Socket socket;
-	private static String dbName = "socket";
-	private static MongodbUtil mongo = new MongodbUtil(dbName);
-	private static final String COLL_NAME = "message";
-
+	private static DBUtil dbutil = new DBUtil();
 	public ProcessSocketData() {
 		super();
 	}
@@ -56,25 +49,32 @@ class ProcessSocketData extends Thread {
 				// 判断截取字符串是否是ip
 				Boolean bole = ConmmentUtil.ipRegex(aimIp);
 				if (bole) {
-					String content = str.substring(quedex + 1).trim();
-					addMessage(content, aimIp, ip);
-					os.println("succese date");
-					os.flush();
+					//将 content 转成  list<Message> 格式
+					String valuestr = str.substring(quedex + 1).trim();
+					//List<Message> list1  = new ArrayList<Message>();
+					int size = addMessageList(valuestr);
+					if(size > 0){
+						os.println("succese date");
+						os.flush();
+					}else{
+						os.println("fiale date");
+						os.flush();
+					}
+					
 				} else {
 					System.out.println("ip 格式不正确！");
 				}
 			} else {
 				// 查询数据库，看是否含有自己 ip 地数据。
-				List<Document> list = countMessageAll(ip);
+				List<Message> list = countMessageAll(ip);
 				logger.info("当前客户端ip："+ip);
 				int size = list.size();
 				if (size > 0) {
-					Document document = list.get(0);
-					ObjectId obj = (ObjectId) document.get("_id");
 					// 删除该条数据
-					deleteByID(obj);
-					logger.info("返回内容:" + document.toString());
-					os.println(document.toString());
+					Message message =list.get(0);
+					deleteById(message.getId());
+					logger.info("返回内容:" + message.toString());
+					os.println(message.toString());
 					os.flush();
 				} else {
 					os.println("not date");
@@ -88,80 +88,28 @@ class ProcessSocketData extends Thread {
 			e.printStackTrace();
 		}
 	}
-
 	/**
-	 * 新增一条message 数据
-	 * 
-	 * @param message
-	 * @param ip
+	 * 将数据 批量插入
+	 * @param list
+	 * @return
 	 */
-	public static void addMessage(String content, String aimIp, String ip) {
-		Document document = new Document();
-		document.append("date", ConmmentUtil.getformter());
-		document.append("ip", ip);
-		document.append("aimIp", aimIp);
-		document.append("message", content);
-		mongo.insert(document, COLL_NAME);
+	public int addMessageList(String str){
+		return dbutil.insertMessageList(str);
+		
 	}
-
 	/**
-	 * 根据ip获得一条数据
-	 * 
+	 * 根据 ip 查出所有数据
 	 * @param ip
 	 * @return
 	 */
-	public static Document getMessage(String ip) {
-		BasicDBObject queryOne = new BasicDBObject();
-		queryOne.append("ip", ip);
-		Document docOne = mongo.findOne(queryOne, COLL_NAME);
-		return docOne;
+	public List<Message> countMessageAll(String ip){
+		return dbutil.countMessageAll(ip);
 	}
-
+	
 	/**
-	 * 根据具体属性进行修改
-	 * 
-	 * @param ip
-	 * @return
+	 * 将还回的数据进行删除
 	 */
-	public static Document updateByFiel(String ip) {
-		Bson filter = Filters.eq("ip", ip);
-		Document doc = new Document();
-		doc.append("state", 0);
-		return mongo.updateByFiel(filter, doc, COLL_NAME);
-	}
-
-	/**
-	 * 根据id进行修改
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public static Document updateBykey(String id) {
-		Document doc = new Document();
-		doc.append("state", 0);
-		return mongo.updateById(id, doc, COLL_NAME);
-	}
-
-	/**
-	 * 根据id进行删除
-	 * 
-	 * @param id
-	 */
-	public static void deleteByID(ObjectId _idobj) {
-		Bson filter = Filters.eq("_id", _idobj);
-		mongo.deleteOne(filter, COLL_NAME);
-	}
-
-	/**
-	 * 根据ip 获取数据库的数量。
-	 * 
-	 * @param ip
-	 * @return
-	 */
-	public static List<Document> countMessageAll(String ip) {
-		BasicDBObject query = new BasicDBObject();
-		query.append("aimIp", ip);
-		return mongo.findAll(query, COLL_NAME);
-
+	public  void deleteById(int id){
+		dbutil.deleteById(id);
 	}
 }
