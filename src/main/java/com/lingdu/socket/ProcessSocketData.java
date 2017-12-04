@@ -46,10 +46,10 @@ class ProcessSocketData extends Thread {
 			int quedex = str.indexOf(";");
 			String ip = socket.getInetAddress().getHostAddress();
 			if (quedex > -1) {
-				String aimIp = str.substring(0, quedex);
+				//String aimIp = str.substring(0, quedex);
 				// 判断截取字符串是否是ip
-				Boolean bole = ConmmentUtil.ipRegex(aimIp);
-				if (bole) {
+				//Boolean bole = ConmmentUtil.ipRegex(aimIp);
+				if (true) {
 					//将 content 转成  list<Message> 格式
 					String valuestr = str.substring(quedex + 1).trim();
 					//List<Message> list1  = new ArrayList<Message>();
@@ -62,9 +62,9 @@ class ProcessSocketData extends Thread {
 						os.flush();
 					}
 					
-				} else {
+				} /*else {
 					System.out.println("ip 格式不正确！");
-				}
+				}*/
 			} else {
 				// 查询数据库，看是否含有自己 ip 地数据。
 				List<Message> list = countMessageAll(ip);

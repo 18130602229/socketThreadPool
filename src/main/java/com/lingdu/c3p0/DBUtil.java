@@ -16,7 +16,7 @@ import com.lingdu.entity.Message;
 public class DBUtil {
 	Logger logger = LoggerFactory.getLogger(DBUtil.class);
 	private static final String KEY_STR = "(terminalid,longitude,latitude,direction,curspeed,speeds,imei,communiid,cellular,version,proxyid,temperature,oil,mileage,sensor,unixtimestamp) VALUES ";
-
+	private static final String MESSAGE = "INSERT INTO message";
 	/**
 	 * 数据批量插入
 	 * 
@@ -34,10 +34,13 @@ public class DBUtil {
 			Statement stmt = null;
 			StringBuffer sbf = new StringBuffer();
 			sbf.append("(").append(str).append(")");
+			StringBuffer sbfsql = new StringBuffer();
+			sbfsql.append(MESSAGE).append(randNum).append(KEY_STR).append(sbf);
 			try {
-				String sql = "INSERT INTO message"+randNum + KEY_STR + sbf.toString();
+				//String sql = MESSAGE+randNum + KEY_STR + sbf.toString();
+				//String sql = "INSERT INTO message" + KEY_STR + sbf.toString();
 				stmt = conn.createStatement();
-				size = stmt.executeUpdate(sql);
+				size = stmt.executeUpdate(sbfsql.toString());
 			} catch (SQLException e) {
 				e.printStackTrace();
 				logger.error("数据插入失败！！");
