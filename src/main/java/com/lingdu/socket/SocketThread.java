@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * socketThread 线程
  */
 class SocketThread extends Thread {
-	private static Logger logger =Logger.getLogger("SocketThread.class");
+	Logger logger = LoggerFactory.getLogger(SocketThread.class);
 	private ServerSocket serverSocket;
 	private int count = 0;
 	

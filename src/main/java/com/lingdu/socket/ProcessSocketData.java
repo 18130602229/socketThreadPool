@@ -7,15 +7,15 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lingdu.c3p0.DBUtil;
 import com.lingdu.entity.Message;
 import com.lingdu.utiltool.ConmmentUtil;
 
 class ProcessSocketData extends Thread {
-
-	private static Logger logger = Logger.getLogger("ProcessSocketData.class");
+	Logger logger = LoggerFactory.getLogger(ProcessSocketData.class);
 	private Socket socket;
 	private static DBUtil dbutil = new DBUtil();
 	public ProcessSocketData() {
@@ -39,6 +39,7 @@ class ProcessSocketData extends Thread {
 			// 客户端传来数据
 			String str = sb.toString();
 			logger.info("客户端发过  "+length+" 内容为:" + str);
+			System.out.println(str);
 			// 客户端传来的数据如“xxx.xxx.xxx.xxx;hell world ....”格式 ，则保存，否则请求响应。
 			PrintWriter os = new PrintWriter(socket.getOutputStream());
 			// 判断字符传来的字符串是否包含 ；符号,如何大于 -1 则包含。

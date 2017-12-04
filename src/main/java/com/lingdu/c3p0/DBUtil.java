@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.lingdu.entity.Message;
 
 public class DBUtil {
-
-	private static Logger logger = Logger.getLogger("DBUtil.class");
+	Logger logger = LoggerFactory.getLogger(DBUtil.class);
 	private static final String KEY_STR = "(terminalid,longitude,latitude,direction,curspeed,speeds,imei,communiid,cellular,version,proxyid,temperature,oil,mileage,sensor,unixtimestamp) VALUES ";
 
 	/**
